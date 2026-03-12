@@ -1,0 +1,25 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string; // Optional fallback title
+}
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- need to add Favicon group here -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    {title && <title>{title}</title>} <!-- Only if no SEO component is used -->
+  </head>
+  <body>
+    <main id="main" tabindex="-1">
+        <slot />
+    </main>
+  </body>
+</html>
