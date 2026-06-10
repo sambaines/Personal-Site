@@ -1,0 +1,40 @@
+---
+import { Image } from 'astro:assets';
+import samPhoto from '../images/Sam.png';
+---
+
+<div class="hello">
+  <span class="hello__text">Hey, I'm Sam</span>
+  <Image
+    src={samPhoto}
+    alt="Sam Baines"
+    class="hello__photo"
+    width={80}
+    height={80}
+  />
+</div>
+
+<style>
+  .hello {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .hello__text {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--color-text);
+  }
+
+  .hello__photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+</style>

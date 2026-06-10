@@ -1,25 +1,28 @@
 ---
 import "../styles/global.css";
+import AgentationWidget from "../components/AgentationWidget.tsx";
 
 interface Props {
-  title?: string; // Optional fallback title
+  title?: string;
 }
 const { title } = Astro.props;
+const isDev = import.meta.env.DEV;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <!-- need to add Favicon group here -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    {title && <title>{title}</title>} <!-- Only if no SEO component is used -->
+    {title && <title>{title}</title>}
   </head>
   <body>
+    <a href="#main" class="skip-link">Skip to content</a>
     <main id="main" tabindex="-1">
-        <slot />
+      <slot />
     </main>
+    {isDev && <AgentationWidget client:only="react" />}
   </body>
 </html>

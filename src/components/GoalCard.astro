@@ -1,0 +1,80 @@
+---
+interface Props {
+  title: string;
+  variant?: 'default' | 'teal' | 'orange';
+}
+
+const { title, variant = 'default' } = Astro.props;
+---
+
+<div class:list={['copy-block', `copy-block--${variant}`]}>
+  <p class="copy-block__title">{title}</p>
+  <div class="copy-block__body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .copy-block {
+    padding: 24px;
+    border-radius: 16px;
+    border-width: 1px;
+    border-style: solid;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow:
+      0 0 1px rgba(0, 0, 0, 0.05),
+      0 1px 1px rgba(0, 0, 0, 0.08),
+      0 2px 2px rgba(0, 0, 0, 0.08),
+      0 4px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Variant: default (dark surface) */
+  .copy-block--default {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+  }
+
+  /* Variant: teal */
+  .copy-block--teal {
+    background-color: #003B48;
+    background-image: radial-gradient(
+      ellipse at 86.5% 69.8%,
+      rgba(0, 107, 128, 0.4) 0%,
+      rgba(0, 59, 72, 0.4) 100%
+    );
+    border-color: #006B80;
+  }
+
+  /* Variant: orange */
+  .copy-block--orange {
+    background-color: #6B3C04;
+    background-image: radial-gradient(
+      ellipse at 86.5% 69.8%,
+      rgba(137, 79, 15, 0.4) 0%,
+      rgba(107, 60, 4, 0.4) 100%
+    );
+    border-color: #894F0F;
+  }
+
+  .copy-block__title {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    color: var(--color-text);
+  }
+
+  .copy-block__body {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0.01em;
+    color: var(--color-text);
+  }
+
+  .copy-block__body :global(p + p) {
+    margin-block-start: 1em;
+  }
+</style>
