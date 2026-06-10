@@ -5,12 +5,22 @@ interface Props {
   title: string;
   label: string;
   backHref?: string;
+  stickyIndex?: number;
 }
 
-const { title, label, backHref = '/' } = Astro.props;
+const { title, label, backHref = '/', stickyIndex } = Astro.props;
+
+const BAR_HEIGHT = 56; // 16px padding-top + 24px line-height + 16px padding-bottom
+const BASE_TOP = 24;
+const stickyTop = stickyIndex !== undefined ? BASE_TOP + stickyIndex * BAR_HEIGHT : undefined;
+const stickyZ = stickyIndex !== undefined ? 20 - stickyIndex : undefined;
 ---
 
-<a href={backHref} class="title-bar">
+<a
+  href={backHref}
+  class:list={['title-bar', { 'title-bar--sticky': stickyIndex !== undefined }]}
+  style={stickyTop !== undefined ? `top: ${stickyTop}px; z-index: ${stickyZ}` : undefined}
+>
   <div class="title-bar__left">
     <div class="title-bar__back" aria-hidden="true">
       <span class="title-bar__back-icon" set:html={arrowIconRaw} />
@@ -22,6 +32,10 @@ const { title, label, backHref = '/' } = Astro.props;
 </a>
 
 <style>
+  .title-bar--sticky {
+    position: sticky;
+  }
+
   .title-bar {
     display: flex;
     align-items: center;
