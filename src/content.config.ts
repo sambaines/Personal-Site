@@ -2,7 +2,7 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const caseStudies = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/case-studies' }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/case-studies' }),
   schema: ({ image }) => z.object({
     title: z.string(),
     company: z.string(),
@@ -13,6 +13,7 @@ const caseStudies = defineCollection({
     role: z.string(),
     scope: z.string(),
     cardImage: image(),
+    heading: z.string().optional(),
   }),
 });
 

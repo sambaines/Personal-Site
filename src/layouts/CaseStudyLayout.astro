@@ -1,0 +1,116 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TitleBar from '../components/TitleBar.astro';
+
+interface Props {
+  title: string;       // Short project name shown in TitleBar (e.g. "YuQuit")
+  label?: string;      // TitleBar right-side label (default: "Case Study")
+  heading?: string;    // Full H1 question/headline; falls back to title
+}
+
+const { title, label = 'Case Study', heading } = Astro.props;
+---
+
+<BaseLayout title={`${title} — Sam Baines`}>
+  <article class="case-study">
+
+    <header class="case-study__header">
+      <div class="case-study__inner">
+        <TitleBar title={title} label={label} stickyIndex={0} />
+        <h1 class="case-study__heading">{heading ?? title}</h1>
+      </div>
+    </header>
+
+    <div class="case-study__body">
+      <div class="case-study__inner">
+        <slot />
+      </div>
+    </div>
+
+  </article>
+</BaseLayout>
+
+<style>
+  .case-study {
+    padding-inline: var(--page-padding-inline);
+    padding-block-end: clamp(4rem, 8vw, 8rem);
+  }
+
+  .case-study__inner {
+    max-width: 728px;
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* ── Header ── */
+
+  .case-study__header {
+    padding-block-start: 40px;
+    padding-block-end: 40px;
+  }
+
+  .case-study__heading {
+    margin-block-start: 24px;
+    font-size: clamp(2rem, 3.5vw + 0.75rem, 3.5rem);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    text-wrap: pretty;
+    color: var(--color-text);
+  }
+
+  /* ── Body content (MDX slot) ── */
+
+  /* First child: flush against the header */
+  .case-study__body :global(:first-child) {
+    margin-block-start: 0;
+  }
+
+  /* h2 section headings */
+  .case-study__body :global(h2) {
+    margin-block-start: 64px;
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    color: var(--color-text);
+  }
+
+  /* Body paragraphs */
+  .case-study__body :global(p) {
+    margin-block-start: 24px;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: 0.01em;
+    color: var(--color-text-muted);
+  }
+
+  /* Bold/strong within body copy */
+  .case-study__body :global(p strong) {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  /* Tight gap: p or component immediately after h2 */
+  .case-study__body :global(h2 + *) {
+    margin-block-start: 16px;
+  }
+
+  /* Components & images: default vertical rhythm */
+  .case-study__body :global(.image-card),
+  .case-study__body :global(.copy-block),
+  .case-study__body :global(.metric-grid) {
+    margin-block-start: 24px;
+  }
+
+  /* TitleBar section dividers get generous top space */
+  .case-study__body :global(.title-bar) {
+    margin-block-start: 80px;
+  }
+
+  /* h2 immediately after a TitleBar: tighter than default 64px */
+  .case-study__body :global(.title-bar + h2) {
+    margin-block-start: 40px;
+  }
+</style>

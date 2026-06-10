@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import CaseStudyLayout from '../../layouts/CaseStudyLayout.astro';
+import ImageCard from '../../components/ImageCard.astro';
+import TitleBar from '../../components/TitleBar.astro';
+import GoalCard from '../../components/GoalCard.astro';
+import MetricGrid from '../../components/MetricGrid.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('case-studies');
+  return entries.map(entry => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<CaseStudyLayout
+  title={entry.data.title}
+  heading={entry.data.heading}
+>
+  <Content components={{
+    img: ImageCard,
+    TitleBar,
+    GoalCard,
+    MetricGrid,
+  }} />
+</CaseStudyLayout>

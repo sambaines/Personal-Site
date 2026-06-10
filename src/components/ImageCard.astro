@@ -1,0 +1,37 @@
+---
+// Used as the MDX `img` component override — receives standard img attributes
+interface Props {
+  src: string;
+  alt?: string;
+  [key: string]: unknown;
+}
+
+const { src, alt = '' } = Astro.props;
+---
+
+<figure class="image-card">
+  <img src={src} alt={alt} class="image-card__img" loading="lazy" decoding="async" />
+</figure>
+
+<style>
+  .image-card {
+    margin: 0;
+    width: 100%;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow:
+      0 0 1px rgba(0, 0, 0, 0.05),
+      0 1px 1px rgba(0, 0, 0, 0.08),
+      0 2px 2px rgba(0, 0, 0, 0.08),
+      0 4px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .image-card__img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+  }
+</style>
