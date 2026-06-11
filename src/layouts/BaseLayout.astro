@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import AgentationWidget from "../components/AgentationWidget.tsx";
+import FloatingMenu from "../components/FloatingMenu.astro";
 
 interface Props {
   title?: string;
@@ -14,7 +15,7 @@ const isDev = import.meta.env.DEV;
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
     {title && <title>{title}</title>}
   </head>
@@ -23,6 +24,13 @@ const isDev = import.meta.env.DEV;
     <main id="main" tabindex="-1">
       <slot />
     </main>
+    <FloatingMenu />
     {isDev && <AgentationWidget client:only="react" />}
   </body>
 </html>
+
+<style>
+  main {
+    padding-block-end: calc(56px + max(16px, 2.5dvh) + env(safe-area-inset-bottom, 0px) + 24px);
+  }
+</style>

@@ -1,0 +1,314 @@
+---
+import { Image } from 'astro:assets';
+import samPhoto from '../images/Sam.png';
+import caseStudiesImg from '../images/case-studies-landscape.png';
+import experimentsImg from '../images/experiments-landscape.png';
+import arrowIconRaw from '../icons/arrow-icon.svg?raw';
+import successIconRaw from '../icons/success-icon.svg?raw';
+
+const EMAIL = 'heysambaines@gmail.com';
+---
+
+<div class="fmenu-backdrop" id="fmenu-backdrop" aria-hidden="true"></div>
+
+<div class="fmenu" id="fmenu">
+  <nav class="fmenu__drawer" id="fmenu-drawer" aria-label="Site navigation" aria-hidden="true">
+    <a href="/case-studies" class="fmenu__item">
+      <span class="fmenu__item-label">
+        Case studies
+        <span aria-hidden="true" set:html={arrowIconRaw} />
+      </span>
+      <Image src={caseStudiesImg} alt="" class="fmenu__item-img" loading="eager" />
+    </a>
+    <a href="/experiments" class="fmenu__item">
+      <span class="fmenu__item-label">
+        Experiments
+        <span aria-hidden="true" set:html={arrowIconRaw} />
+      </span>
+      <Image src={experimentsImg} alt="" class="fmenu__item-img" loading="eager" />
+    </a>
+  </nav>
+
+  <div class="fmenu__toast" id="fmenu-toast" role="status" aria-live="polite" aria-atomic="true">
+    <span>Email copied!</span>
+    <span aria-hidden="true" set:html={successIconRaw} />
+  </div>
+
+  <!-- Pill: split into two buttons so Menu and email are separate targets -->
+  <div class="fmenu__pill">
+    <button
+      class="fmenu__pill-trigger"
+      id="fmenu-trigger"
+      aria-expanded="false"
+      aria-controls="fmenu-drawer"
+      aria-label="Toggle navigation menu"
+    >
+      <span class="fmenu__avatar" aria-hidden="true">
+        <Image src={samPhoto} alt="" width={80} height={80} />
+      </span>
+      <span class="fmenu__pill-label">Menu</span>
+    </button>
+    <button
+      class="fmenu__pill-email"
+      id="fmenu-email-btn"
+      aria-label={`Copy email address ${EMAIL}`}
+    >
+      {EMAIL}
+    </button>
+  </div>
+</div>
+
+<script>
+  const backdrop = document.getElementById('fmenu-backdrop');
+  const fmenu = document.getElementById('fmenu');
+  const trigger = document.getElementById('fmenu-trigger');
+  const drawer = document.getElementById('fmenu-drawer');
+  const emailBtn = document.getElementById('fmenu-email-btn');
+  const toast = document.getElementById('fmenu-toast');
+  let toastTimer: ReturnType<typeof setTimeout>;
+
+  function openMenu() {
+    fmenu?.setAttribute('data-open', '');
+    backdrop?.setAttribute('data-open', '');
+    trigger?.setAttribute('aria-expanded', 'true');
+    drawer?.removeAttribute('aria-hidden');
+  }
+
+  function closeMenu() {
+    fmenu?.removeAttribute('data-open');
+    backdrop?.removeAttribute('data-open');
+    trigger?.setAttribute('aria-expanded', 'false');
+    drawer?.setAttribute('aria-hidden', 'true');
+  }
+
+  trigger?.addEventListener('click', () => {
+    fmenu?.hasAttribute('data-open') ? closeMenu() : openMenu();
+  });
+
+  backdrop?.addEventListener('click', closeMenu);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && fmenu?.hasAttribute('data-open')) closeMenu();
+  });
+
+  emailBtn?.addEventListener('click', async () => {
+    if (fmenu?.hasAttribute('data-open')) closeMenu();
+    try {
+      await navigator.clipboard.writeText('heysambaines@gmail.com');
+    } catch {
+      // Clipboard API unavailable — toast still shows
+    }
+    toast?.setAttribute('data-show', '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast?.removeAttribute('data-show');
+    }, 2000);
+  });
+</script>
+
+<style>
+  /* ── Backdrop ── */
+  .fmenu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: rgba(0, 0, 0, 0.48);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease-out;
+  }
+
+  .fmenu-backdrop[data-open] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ── Container ── */
+  .fmenu {
+    position: fixed;
+    bottom: calc(max(16px, 2.5dvh) + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* ── Shared pill shadow (reused on drawer, toast, pill) ── */
+  .fmenu__drawer,
+  .fmenu__toast,
+  .fmenu__pill {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      inset 0 1px 0.5px rgba(255, 255, 255, 0.04),
+      0 0 1.5px rgba(0, 0, 0, 0.12),
+      0 0 1px rgba(0, 0, 0, 0.08),
+      0 1px 1px rgba(0, 0, 0, 0.08),
+      0 2px 2px rgba(0, 0, 0, 0.08),
+      0 4px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  /* ── Drawer ── */
+  .fmenu__drawer {
+    background: #1a1c1c;
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 8px 8px 8px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease,
+      transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  .fmenu[data-open] .fmenu__drawer {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* ── Nav items ── */
+  .fmenu__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+
+  .fmenu__item-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.03em;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+
+  .fmenu__item-label :global(svg) {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .fmenu__item-label :global(svg path) {
+    fill: #ffffff;
+  }
+
+  .fmenu__item-img {
+    width: 62px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+    flex-shrink: 0;
+    filter: grayscale(1);
+    transition: filter 0.15s ease;
+  }
+
+  .fmenu__item:hover .fmenu__item-img {
+    filter: grayscale(0);
+  }
+
+  /* ── Toast ── */
+  .fmenu__toast {
+    position: absolute;
+    bottom: calc(56px + 8px); /* pill height + gap */
+    left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    background: #151717;
+    border: 0.5px solid #212121;
+    border-radius: 12px;
+    white-space: nowrap;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.03em;
+    color: #ffffff;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease,
+      transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  .fmenu__toast[data-show] {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .fmenu__toast :global(svg) {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .fmenu__toast :global(svg path) {
+    fill: #ffffff;
+  }
+
+  /* ── Pill ── */
+  .fmenu__pill {
+    display: flex;
+    align-items: center;
+    padding: 8px 24px 8px 8px;
+    background: #151717;
+    border: 0.5px solid #212121;
+    border-radius: 48px;
+    white-space: nowrap;
+  }
+
+  .fmenu__pill-trigger,
+  .fmenu__pill-email {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.03em;
+    color: #ffffff;
+    font-family: inherit;
+  }
+
+  .fmenu__pill-trigger {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-right: 24px;
+  }
+
+  .fmenu__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .fmenu__avatar :global(img) {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    display: block;
+  }
+</style>
