@@ -1,17 +1,27 @@
 ---
-// Used as the MDX `img` component override — receives standard img attributes
+import { Image } from 'astro:assets';
+
+// Used as the MDX `img` component override.
+// Local images are passed as imported image objects { src, width, height };
+// remote/string srcs fall back to a plain <img>.
 interface Props {
-  src: string;
+  src: ImageMetadata | string;
   alt?: string;
   [key: string]: unknown;
 }
 
 const { src, alt = '' } = Astro.props;
+const isImageObject = src && typeof src === 'object';
 ---
 
-<figure class="image-card">
-  <img src={src} alt={alt} class="image-card__img" loading="lazy" decoding="async" />
-</figure>
+{src && (
+  <figure class="image-card">
+    {isImageObject
+      ? <Image src={src as ImageMetadata} alt={alt} class="image-card__img" loading="lazy" />
+      : <img src={src as string} alt={alt} class="image-card__img" loading="lazy" decoding="async" />
+    }
+  </figure>
+)}
 
 <style>
   .image-card {
