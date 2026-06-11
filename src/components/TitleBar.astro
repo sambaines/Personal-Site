@@ -10,10 +10,9 @@ interface Props {
 
 const { title, label, backHref = '/', stickyIndex } = Astro.props;
 
-const BAR_HEIGHT = 56; // 16px padding-top + 24px line-height + 16px padding-bottom
 const BASE_TOP = 24;
-const stickyTop = stickyIndex !== undefined ? BASE_TOP + stickyIndex * BAR_HEIGHT : undefined;
-const stickyZ = stickyIndex !== undefined ? 20 - stickyIndex : undefined;
+const stickyTop = stickyIndex !== undefined ? BASE_TOP : undefined;
+const stickyZ = stickyIndex !== undefined ? 10 + stickyIndex : undefined;
 ---
 
 <a
@@ -75,7 +74,7 @@ const stickyZ = stickyIndex !== undefined ? 20 - stickyIndex : undefined;
     padding-right: 0;
     transition:
       max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-      opacity 0.2s ease,
+      opacity 0.2s ease-out,
       padding-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 

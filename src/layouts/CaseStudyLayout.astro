@@ -13,20 +13,19 @@ const { title, label = 'Case Study', heading } = Astro.props;
 
 <BaseLayout title={`${title} — Sam Baines`}>
   <article class="case-study">
+    <div class="case-study__inner">
 
-    <header class="case-study__header">
-      <div class="case-study__inner">
-        <TitleBar title={title} label={label} stickyIndex={0} />
+      <TitleBar title={title} label={label} stickyIndex={0} />
+
+      <header class="case-study__header">
         <h1 class="case-study__heading">{heading ?? title}</h1>
-      </div>
-    </header>
+      </header>
 
-    <div class="case-study__body">
-      <div class="case-study__inner">
+      <div class="case-study__body">
         <slot />
       </div>
-    </div>
 
+    </div>
   </article>
 </BaseLayout>
 
@@ -40,12 +39,12 @@ const { title, label = 'Case Study', heading } = Astro.props;
     max-width: 728px;
     margin-inline: auto;
     width: 100%;
+    padding-block-start: 40px;
   }
 
   /* ── Header ── */
 
   .case-study__header {
-    padding-block-start: 40px;
     padding-block-end: 40px;
   }
 
@@ -76,8 +75,8 @@ const { title, label = 'Case Study', heading } = Astro.props;
     color: var(--color-text);
   }
 
-  /* Body paragraphs */
-  .case-study__body :global(p) {
+  /* Body paragraphs (excludes p inside components like GoalCard) */
+  .case-study__body :global(p:not(.copy-block *)) {
     margin-block-start: 24px;
     font-size: 24px;
     font-weight: 500;
@@ -92,8 +91,14 @@ const { title, label = 'Case Study', heading } = Astro.props;
     font-weight: 500;
   }
 
-  /* Tight gap: p or component immediately after h2 */
+  /* 16px gap: element immediately after h2 */
   .case-study__body :global(h2 + *) {
+    margin-block-start: 16px;
+  }
+
+  /* 16px gap: p after h2, and p after p */
+  .case-study__body :global(h2 + p:not(.copy-block *)),
+  .case-study__body :global(p:not(.copy-block *) + p:not(.copy-block *)) {
     margin-block-start: 16px;
   }
 
