@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import CaseStudyLayout from '../../layouts/CaseStudyLayout.astro';
 import ImageCard from '../../components/ImageCard.astro';
+import Carousel from '../../components/Carousel.astro';
 import TitleBar from '../../components/TitleBar.astro';
 import GoalCard from '../../components/GoalCard.astro';
 import MetricGrid from '../../components/MetricGrid.astro';
@@ -27,5 +28,6 @@ const { Content } = await render(entry);
     TitleBar,
     GoalCard,
     MetricGrid,
+    Carousel,
   }} />
 </CaseStudyLayout>
