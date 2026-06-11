@@ -1,0 +1,41 @@
+---
+interface Props {
+  src: string;
+  poster?: string;
+}
+const { src, poster } = Astro.props;
+---
+
+<figure class="video-card">
+  <video
+    src={src}
+    poster={poster}
+    autoplay
+    loop
+    muted
+    playsinline
+    class="video-card__video"
+  />
+</figure>
+
+<style>
+  .video-card {
+    margin: 0;
+    width: 100%;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+      0 0 1px rgba(0, 0, 0, 0.05),
+      0 1px 1px rgba(0, 0, 0, 0.08),
+      0 2px 2px rgba(0, 0, 0, 0.08),
+      0 4px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .video-card__video {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>

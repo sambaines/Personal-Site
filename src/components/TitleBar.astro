@@ -42,6 +42,7 @@ const stickyZ = stickyIndex !== undefined ? 10 + stickyIndex : undefined;
     width: 100%;
     max-width: 728px;
     padding: 16px 24px;
+    transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 48px;
     border: 0.5px solid #212121;
     background: #151717;
@@ -76,6 +77,10 @@ const stickyZ = stickyIndex !== undefined ? 10 + stickyIndex : undefined;
       max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       opacity 0.2s ease-out,
       padding-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .title-bar:hover {
+    padding-left: 16px;
   }
 
   .title-bar:hover .title-bar__back {
@@ -123,5 +128,16 @@ const stickyZ = stickyIndex !== undefined ? 10 + stickyIndex : undefined;
     white-space: nowrap;
     flex-shrink: 0;
     margin-left: 16px;
+  }
+
+  @media (max-width: 639px) {
+    .title-bar__back-text {
+      display: none;
+    }
+
+    .title-bar:hover .title-bar__back {
+      max-width: 24px;
+      padding-right: 12px;
+    }
   }
 </style>

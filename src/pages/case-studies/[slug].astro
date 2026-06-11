@@ -6,6 +6,7 @@ import Carousel from '../../components/Carousel.astro';
 import TitleBar from '../../components/TitleBar.astro';
 import GoalCard from '../../components/GoalCard.astro';
 import MetricGrid from '../../components/MetricGrid.astro';
+import VideoCard from '../../components/VideoCard.astro';
 
 export async function getStaticPaths() {
   const entries = await getCollection('case-studies');
@@ -29,5 +30,6 @@ const { Content } = await render(entry);
     GoalCard,
     MetricGrid,
     Carousel,
+    VideoCard,
   }} />
 </CaseStudyLayout>

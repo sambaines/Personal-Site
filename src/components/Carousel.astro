@@ -2,38 +2,59 @@
 import { Image } from 'astro:assets';
 
 interface Props {
-  images: ImageMetadata[];
+  images: (ImageMetadata | string)[];
   alts?: string[];
+  captions?: string[];
 }
 
-const { images, alts = [] } = Astro.props;
+const { images, alts = [], captions = [] } = Astro.props;
 const id = `carousel-${Math.random().toString(36).slice(2, 9)}`;
+const hasCaptions = captions.some(c => c);
 ---
 
 <figure class="carousel" data-carousel id={id}>
   <div class="carousel__track" aria-live="polite">
     {images.map((img, i) => (
       <div class="carousel__slide" aria-label={`Slide ${i + 1} of ${images.length}`}>
-        <Image
-          src={img}
-          alt={alts[i] ?? ''}
-          class="carousel__img"
-          loading={i === 0 ? 'eager' : 'lazy'}
-        />
+        {typeof img === 'string' ? (
+          <video
+            src={img}
+            class="carousel__img"
+            autoplay
+            loop
+            muted
+            playsinline
+          />
+        ) : (
+          <Image
+            src={img}
+            alt={alts[i] ?? ''}
+            class="carousel__img"
+            loading={i === 0 ? 'eager' : 'lazy'}
+          />
+        )}
       </div>
     ))}
   </div>
 
+  {hasCaptions && (
+    <div class="carousel__caption-area">
+      {images.map((_, i) => (
+        <p
+          class={`carousel__caption-text${i === 0 ? ' is-active' : ''}`}
+          data-caption-index={i}
+        >
+          {captions[i] || '\u00A0'}
+        </p>
+      ))}
+    </div>
+  )}
+
   {images.length > 1 && (
-    <>
-      <button class="carousel__btn carousel__btn--prev" aria-label="Previous slide" data-prev>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <div class="carousel__controls">
+      <button class="carousel__btn" aria-label="Previous slide" data-prev>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <button class="carousel__btn carousel__btn--next" aria-label="Next slide" data-next>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
 
@@ -48,7 +69,13 @@ const id = `carousel-${Math.random().toString(36).slice(2, 9)}`;
           />
         ))}
       </div>
-    </>
+
+      <button class="carousel__btn" aria-label="Next slide" data-next>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
   )}
 </figure>
 
@@ -57,6 +84,7 @@ const id = `carousel-${Math.random().toString(36).slice(2, 9)}`;
     const track = carousel.querySelector<HTMLElement>('.carousel__track')!;
     const slides = carousel.querySelectorAll<HTMLElement>('.carousel__slide');
     const dots = carousel.querySelectorAll<HTMLButtonElement>('.carousel__dot');
+    const captions = carousel.querySelectorAll<HTMLElement>('.carousel__caption-text');
     const prevBtn = carousel.querySelector<HTMLButtonElement>('[data-prev]');
     const nextBtn = carousel.querySelector<HTMLButtonElement>('[data-next]');
     const total = slides.length;
@@ -66,13 +94,14 @@ const id = `carousel-${Math.random().toString(36).slice(2, 9)}`;
       current = (index + total) % total;
       track.scrollTo({ left: current * track.offsetWidth, behavior: 'smooth' });
       dots.forEach((dot, i) => dot.setAttribute('aria-selected', String(i === current)));
+      captions.forEach((cap, i) => cap.classList.toggle('is-active', i === current));
     }
 
     prevBtn?.addEventListener('click', () => goTo(current - 1));
     nextBtn?.addEventListener('click', () => goTo(current + 1));
     dots.forEach((dot) => dot.addEventListener('click', () => goTo(Number(dot.dataset.index))));
 
-    // Sync dots on scroll snap (e.g. swipe)
+    // Sync on scroll snap (e.g. swipe)
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -81,6 +110,7 @@ const id = `carousel-${Math.random().toString(36).slice(2, 9)}`;
             if (index !== -1) {
               current = index;
               dots.forEach((dot, i) => dot.setAttribute('aria-selected', String(i === current)));
+              captions.forEach((cap, i) => cap.classList.toggle('is-active', i === current));
             }
           }
         });
@@ -94,7 +124,6 @@ const id = `carousel-${Math.random().toString(36).slice(2, 9)}`;
 <style>
   .carousel {
     margin: 0;
-    position: relative;
     width: 100%;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -123,6 +152,9 @@ const id = `carousel-${Math.random().toString(36).slice(2, 9)}`;
   .carousel__slide {
     flex: 0 0 100%;
     scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .carousel__img {
@@ -131,43 +163,66 @@ const id = `carousel-${Math.random().toString(36).slice(2, 9)}`;
     display: block;
   }
 
+  /* Caption area */
+  .carousel__caption-area {
+    position: relative;
+    padding: 12px 16px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .carousel__caption-text {
+    margin: 0 auto;
+    max-width: 728px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: 0.01em;
+    color: var(--color-text);
+    white-space: pre-line;
+    display: none;
+  }
+
+  .carousel__caption-text.is-active {
+    display: block;
+  }
+
+  /* Controls bar */
+  .carousel__controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--color-border);
+  }
+
   /* Prev / Next buttons */
   .carousel__btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 48px;
-    height: 48px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
     border-radius: 50%;
-    border: none;
-    background: rgba(0, 0, 0, 0.5);
-    color: #ffffff;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    transition: background 0.15s ease;
-    z-index: 2;
+    transition: border-color 0.15s ease, color 0.15s ease;
   }
 
   .carousel__btn:hover {
-    background: rgba(0, 0, 0, 0.72);
+    border-color: var(--color-text-muted);
+    color: var(--color-text);
   }
-
-  .carousel__btn--prev { left: 12px; }
-  .carousel__btn--next { right: 12px; }
 
   /* Dots */
   .carousel__dots {
-    position: absolute;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
+    flex: 1;
     display: flex;
+    align-items: center;
+    justify-content: center;
     gap: 6px;
-    z-index: 2;
   }
 
   .carousel__dot {
@@ -175,7 +230,7 @@ const id = `carousel-${Math.random().toString(36).slice(2, 9)}`;
     height: 6px;
     border-radius: 50%;
     border: none;
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.25);
     padding: 0;
     cursor: pointer;
     transition: background 0.15s ease, transform 0.15s ease;

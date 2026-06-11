@@ -76,7 +76,7 @@ const { title, label = 'Case Study', heading } = Astro.props;
   }
 
   /* Body paragraphs (excludes p inside components like GoalCard) */
-  .case-study__body :global(p:not(.copy-block *)) {
+  .case-study__body :global(p:not(.copy-block *):not(.carousel *)) {
     margin-block-start: 24px;
     font-size: 24px;
     font-weight: 500;
@@ -97,16 +97,27 @@ const { title, label = 'Case Study', heading } = Astro.props;
   }
 
   /* 16px gap: p after h2, and p after p */
-  .case-study__body :global(h2 + p:not(.copy-block *)),
-  .case-study__body :global(p:not(.copy-block *) + p:not(.copy-block *)) {
+  .case-study__body :global(h2 + p:not(.copy-block *):not(.carousel *)),
+  .case-study__body :global(p:not(.copy-block *):not(.carousel *) + p:not(.copy-block *):not(.carousel *)) {
     margin-block-start: 16px;
   }
 
   /* Components & images: default vertical rhythm */
   .case-study__body :global(.image-card),
+  .case-study__body :global(.video-card),
+  .case-study__body :global(.carousel),
   .case-study__body :global(.copy-block),
   .case-study__body :global(.metric-grid) {
     margin-block-start: 24px;
+  }
+
+  /* Wide media: expand image/video/carousel up to 1024px, breaking out of 728px text column */
+  .case-study__body :global(.image-card),
+  .case-study__body :global(.video-card),
+  .case-study__body :global(.carousel) {
+    --wide-width: min(1024px, calc(100vw - 2 * var(--page-padding-inline)));
+    width: var(--wide-width);
+    margin-inline: calc((100% - var(--wide-width)) / 2);
   }
 
   /* TitleBar section dividers get generous top space */
