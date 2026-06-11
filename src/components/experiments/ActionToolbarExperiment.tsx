@@ -1,11 +1,12 @@
-import { useState } from 'react';
-// iconPosition is always 'trailing' in this experiment
+import { useState, useRef } from 'react';
 import Button from './Button';
 import landscapeImport from '../../images/case-studies-landscape.png';
 
 const landscapeSrc = typeof landscapeImport === 'string'
   ? landscapeImport
   : (landscapeImport as { src: string }).src;
+
+const LENS_R = 40;
 
 const ArrowIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -53,46 +54,112 @@ function Toggle({ checked, onChange, id }: ToggleProps) {
   );
 }
 
+const previewContentStyle = (showOnImage: boolean): React.CSSProperties => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%',
+  height: '100%',
+  background: showOnImage ? undefined : 'rgba(255,255,255,0.03)',
+});
+
 export default function ActionToolbarExperiment() {
   const [showIcon, setShowIcon] = useState(false);
   const [showOnImage, setShowOnImage] = useState(false);
+  const [magnifier, setMagnifier] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [mouseInPreview, setMouseInPreview] = useState(false);
+  const [previewDims, setPreviewDims] = useState({ w: 0, h: 0 });
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = previewRef.current!.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setMousePos({ x, y });
+    if (previewDims.w !== rect.width || previewDims.h !== rect.height) {
+      setPreviewDims({ w: rect.width, h: rect.height });
+    }
+  };
+
+  const showLens = magnifier && mouseInPreview && previewDims.w > 0;
+
+  const backgroundImage = showOnImage ? (
+    <img
+      src={landscapeSrc}
+      alt=""
+      aria-hidden="true"
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+    />
+  ) : null;
+
+  const buttonContent = (
+    <div style={{ position: 'relative', width: '100%', maxWidth: 320, padding: '0 24px' }}>
+      <Button icon={showIcon ? <ArrowIcon /> : undefined} iconPosition="trailing">
+        Blog
+      </Button>
+    </div>
+  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Preview */}
-      <div style={{
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: 160,
-        borderRadius: 12,
-        overflow: 'hidden',
-        background: showOnImage ? undefined : 'rgba(255,255,255,0.03)',
-      }}>
-        {showOnImage && (
-          <img
-            src={landscapeSrc}
-            alt=""
-            aria-hidden="true"
-            style={{
+      <div
+        ref={previewRef}
+        style={{
+          position: 'relative',
+          minHeight: 160,
+          borderRadius: 12,
+          overflow: 'hidden',
+          cursor: magnifier ? 'none' : 'default',
+          ...previewContentStyle(showOnImage),
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setMouseInPreview(true)}
+        onMouseLeave={() => setMouseInPreview(false)}
+      >
+        {backgroundImage}
+        {buttonContent}
+
+        {/* Magnifier lens */}
+        {showLens && (
+          <div style={{
+            position: 'absolute',
+            left: mousePos.x - LENS_R,
+            top: mousePos.y - LENS_R,
+            width: LENS_R * 2,
+            height: LENS_R * 2,
+            borderRadius: '50%',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+            zIndex: 10,
+            background: '#1E2020',
+            border: '1.5px solid rgba(255,255,255,0.2)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
+          }}>
+            {/* Replica of preview content, scaled 2× around cursor point */}
+            <div style={{
               position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
-          />
+              left: LENS_R - mousePos.x,
+              top: LENS_R - mousePos.y,
+              width: previewDims.w,
+              height: previewDims.h,
+              transform: 'scale(2)',
+              transformOrigin: `${mousePos.x}px ${mousePos.y}px`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: showOnImage ? undefined : 'rgba(255,255,255,0.03)',
+            }}>
+              {backgroundImage}
+              {buttonContent}
+            </div>
+          </div>
         )}
-        <div style={{ position: 'relative', width: '100%', maxWidth: 320, padding: '0 24px' }}>
-          <Button icon={showIcon ? <ArrowIcon /> : undefined} iconPosition="trailing">
-            Blog
-          </Button>
-        </div>
       </div>
 
-      {/* Controls — inline, no card */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+      {/* Controls */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <label htmlFor="toggle-icon" style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
             Show icon
@@ -104,6 +171,12 @@ export default function ActionToolbarExperiment() {
             Show on image
           </label>
           <Toggle id="toggle-image" checked={showOnImage} onChange={setShowOnImage} />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <label htmlFor="toggle-magnifier" style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
+            Magnifier
+          </label>
+          <Toggle id="toggle-magnifier" checked={magnifier} onChange={setMagnifier} />
         </div>
       </div>
     </div>
