@@ -102,12 +102,13 @@ export default function ActionToolbarExperiment() {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', paddingBottom: 88 }}>
       {/* Preview */}
       <div
         ref={previewRef}
         style={{
           position: 'relative',
+          flex: 1,
           minHeight: 160,
           borderRadius: 4,
           overflow: 'hidden',
@@ -166,7 +167,7 @@ export default function ActionToolbarExperiment() {
           .exp-control { flex-direction: column; gap: 4px; }
         }
       `}</style>
-      <div className="exp-controls">
+      <div className="exp-controls" style={{ position: 'absolute', bottom: 16, left: 0, right: 0 }}>
         <div className="exp-control">
           <label htmlFor="toggle-icon" style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
             Show icon

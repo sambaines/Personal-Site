@@ -211,12 +211,22 @@ const { Content } = latestExperiment ? await render(latestExperiment) : { Conten
   .experiment-card {
     max-width: 728px;
     margin-inline: auto;
+    min-height: clamp(320px, 60vw, 580px);
+    display: flex;
+    flex-direction: column;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 16px;
-    padding-block: clamp(1rem, 5vw, 3rem);
+    padding-block-start: clamp(1rem, 5vw, 3rem);
+    padding-block-end: 16px;
     padding-inline: clamp(1rem, 5vw, 3rem);
     overflow: hidden;
+  }
+
+  .experiment-card :global(astro-island) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   .experiment-card :global(.experiment-placeholder) {
