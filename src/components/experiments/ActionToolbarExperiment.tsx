@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import Button from './Button';
-import landscapeImport from '../../images/case-studies-landscape.png';
+import landscapeImport from '../../images/experiments/blue-mosque-bg.png';
 
 const landscapeSrc = typeof landscapeImport === 'string'
   ? landscapeImport
@@ -89,7 +89,7 @@ export default function ActionToolbarExperiment() {
       src={landscapeSrc}
       alt=""
       aria-hidden="true"
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: '0.48' }}
     />
   ) : null;
 
@@ -109,7 +109,7 @@ export default function ActionToolbarExperiment() {
         style={{
           position: 'relative',
           minHeight: 160,
-          borderRadius: 12,
+          borderRadius: 4,
           overflow: 'hidden',
           cursor: magnifier ? 'none' : 'default',
           ...previewContentStyle(showOnImage),
