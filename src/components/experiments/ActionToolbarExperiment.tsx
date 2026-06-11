@@ -60,7 +60,7 @@ const previewContentStyle = (showOnImage: boolean): React.CSSProperties => ({
   justifyContent: 'center',
   width: '100%',
   height: '100%',
-  background: showOnImage ? undefined : 'rgba(255,255,255,0.03)',
+  background: showOnImage ? undefined : 'transparent',
 });
 
 export default function ActionToolbarExperiment() {
@@ -149,7 +149,7 @@ export default function ActionToolbarExperiment() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: showOnImage ? undefined : 'rgba(255,255,255,0.03)',
+              background: showOnImage ? undefined : 'transparent',
             }}>
               {backgroundImage}
               {buttonContent}
@@ -159,20 +159,27 @@ export default function ActionToolbarExperiment() {
       </div>
 
       {/* Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <style>{`
+        .exp-controls { display: flex; align-items: center; justify-content: center; gap: 24px; }
+        .exp-control { display: flex; align-items: center; gap: 8px; }
+        @media (max-width: 480px) {
+          .exp-control { flex-direction: column; gap: 4px; }
+        }
+      `}</style>
+      <div className="exp-controls">
+        <div className="exp-control">
           <label htmlFor="toggle-icon" style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
             Show icon
           </label>
           <Toggle id="toggle-icon" checked={showIcon} onChange={setShowIcon} />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="exp-control">
           <label htmlFor="toggle-image" style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
             Show on image
           </label>
           <Toggle id="toggle-image" checked={showOnImage} onChange={setShowOnImage} />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="exp-control">
           <label htmlFor="toggle-magnifier" style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
             Magnifier
           </label>
