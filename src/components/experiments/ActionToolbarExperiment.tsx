@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import Button from './Button';
-import landscapeImport from '../../images/experiments/blue-mosque-bg.png';
+import landscapeImport from '../../images/experiments/blue-mosque-bg.jpeg';
 
 const landscapeSrc = typeof landscapeImport === 'string'
   ? landscapeImport
