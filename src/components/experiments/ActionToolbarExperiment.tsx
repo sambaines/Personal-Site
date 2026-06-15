@@ -96,7 +96,7 @@ export default function ActionToolbarExperiment() {
   const buttonContent = (
     <div style={{ position: 'relative', width: '100%', maxWidth: 320, padding: '0 24px' }}>
       <Button icon={showIcon ? <ArrowIcon /> : undefined} iconPosition="trailing">
-        Blog
+        Call to action
       </Button>
     </div>
   );
