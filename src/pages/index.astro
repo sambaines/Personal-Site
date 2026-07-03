@@ -8,7 +8,8 @@ import arrowIcon from "../icons/arrow-icon.svg?raw";
 import experimentsLandscape from "../images/experiments-landscape.png";
 
 const caseStudies = (await getCollection('case-studies'))
-  .sort((a, b) => a.data.order - b.data.order);
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
 
 const allExperiments = await getCollection('experiments');
 const latestExperiment = allExperiments.sort(
